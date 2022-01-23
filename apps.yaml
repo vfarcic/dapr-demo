@@ -1,0 +1,133 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscriber-app
+  labels:
+    app: subscriber-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscriber-app
+  template:
+    metadata:
+      labels:
+        app: subscriber-app
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "subscriber-app"
+        dapr.io/app-port: "8080"
+    spec:
+      containers:
+      - name: subscriber-app
+        image: vfarcic/dapr-subscriber-app:0.1.1
+        ports:
+        - containerPort: 8080
+        # imagePullPolicy: Always
+
+---
+
+# TODO: Remove
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-subscriber
+  labels:
+    app: node-subscriber
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-subscriber
+  template:
+    metadata:
+      labels:
+        app: node-subscriber
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "node-subscriber"
+        dapr.io/app-port: "3000"
+    spec:
+      containers:
+      - name: node-subscriber
+        image: dapriosamples/pubsub-node-subscriber:latest
+        ports:
+        - containerPort: 3000
+        imagePullPolicy: Always
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-subscriber
+  labels:
+    app: python-subscriber
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-subscriber
+  template:
+    metadata:
+      labels:
+        app: python-subscriber
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "python-subscriber"
+        dapr.io/app-port: "5000"
+    spec:
+      containers:
+      - name: python-subscriber
+        image: dapriosamples/pubsub-python-subscriber:1.5.0
+        ports:
+        - containerPort: 5000
+        imagePullPolicy: Always
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: react-form
+  labels:
+    app: react-form
+spec:
+  selector:
+    app: react-form
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-form
+  labels:
+    app: react-form
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-form
+  template:
+    metadata:
+      labels:
+        app: react-form
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "react-form"
+        dapr.io/app-port: "8080"
+    spec:
+      containers:
+      - name: react-form
+        image: dapriosamples/pubsub-react-form:latest
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
