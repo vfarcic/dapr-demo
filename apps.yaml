@@ -3,88 +3,70 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: subscriber-app
+  name: subscriber-app-1
   labels:
-    app: subscriber-app
+    app: subscriber-app-1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: subscriber-app
+      app: subscriber-app-1
   template:
     metadata:
       labels:
-        app: subscriber-app
+        app: subscriber-app-1
       annotations:
         dapr.io/enabled: "true"
-        dapr.io/app-id: "subscriber-app"
+        dapr.io/app-id: "subscriber-app-1"
         dapr.io/app-port: "8080"
     spec:
       containers:
       - name: subscriber-app
-        image: vfarcic/dapr-subscriber-app:0.1.1
+        image: vfarcic/dapr-subscriber-app:0.1.5
         ports:
         - containerPort: 8080
-        # imagePullPolicy: Always
-
----
-
-# TODO: Remove
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: node-subscriber
-  labels:
-    app: node-subscriber
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: node-subscriber
-  template:
-    metadata:
-      labels:
-        app: node-subscriber
-      annotations:
-        dapr.io/enabled: "true"
-        dapr.io/app-id: "node-subscriber"
-        dapr.io/app-port: "3000"
-    spec:
-      containers:
-      - name: node-subscriber
-        image: dapriosamples/pubsub-node-subscriber:latest
-        ports:
-        - containerPort: 3000
-        imagePullPolicy: Always
+        env:
+        - name: PUBSUB_NAME
+          value: pubsub
+        - name: ROUTE
+          value: /publish
+        - name: TOPICS
+          value: A,B
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: python-subscriber
+  name: subscriber-app-2
   labels:
-    app: python-subscriber
+    app: subscriber-app-2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: python-subscriber
+      app: subscriber-app-2
   template:
     metadata:
       labels:
-        app: python-subscriber
+        app: subscriber-app-2
       annotations:
         dapr.io/enabled: "true"
-        dapr.io/app-id: "python-subscriber"
-        dapr.io/app-port: "5000"
+        dapr.io/app-id: "subscriber-app-2"
+        dapr.io/app-port: "8080"
     spec:
       containers:
-      - name: python-subscriber
-        image: dapriosamples/pubsub-python-subscriber:1.5.0
+      - name: subscriber-app
+        image: vfarcic/dapr-subscriber-app:0.1.5
         ports:
-        - containerPort: 5000
-        imagePullPolicy: Always
+        - containerPort: 8080
+        env:
+        - name: PUBSUB_NAME
+          value: pubsub
+        - name: ROUTE
+          value: /publish
+        - name: TOPICS
+          value: A,C
 
 ---
 
