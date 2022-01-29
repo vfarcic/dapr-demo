@@ -9,7 +9,7 @@ spec:
   version: v1
   metadata:
   - name: redisHost
-    value: redis-master.default.svc.cluster.local:6379
+    value: redis-master.production.svc.cluster.local:6379
   - name: redisPassword
     secretKeyRef:
       name: redis
@@ -26,7 +26,7 @@ spec:
   version: v1
   metadata:
   - name: redisHost
-    value: redis-master.default.svc.cluster.local:6379
+    value: redis-master.production.svc.cluster.local:6379
   - name: redisPassword
     secretKeyRef:
       name: redis

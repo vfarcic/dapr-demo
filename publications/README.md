@@ -1,5 +1,5 @@
 ```bash
-export VERSION=0.1.18
+export VERSION=0.1.19
 
 docker image build --tag ghcr.io/vfarcic/dapr-publications .
 

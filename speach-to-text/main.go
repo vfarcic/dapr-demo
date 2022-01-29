@@ -43,6 +43,6 @@ func rootHandler(w http.ResponseWriter, req *http.Request) {
 
 func eventHandler(ctx context.Context, e *common.TopicEvent) (retry bool, err error) {
 	log.Printf("PubsubName: %s, Topic: %s, ID: %s, Data: %s", e.PubsubName, e.Topic, e.ID, e.Data)
-	log.Println("Running speach to text service...")
+	log.Println("Running speech to text service...")
 	return false, nil
 }

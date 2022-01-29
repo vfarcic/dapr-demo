@@ -92,6 +92,6 @@ url: %s`,
 	if err := client.PublishEvent(ctx, pubsubName, "blog", []byte(data)); err != nil {
 		panic(err)
 	}
-	output := fmt.Sprintf("Added podcast:\n%s\n", data)
+	output := fmt.Sprintf("Added blog:\n%s\n", data)
 	fmt.Fprintf(w, output)
 }
