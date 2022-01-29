@@ -3,26 +3,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: subscriber-app-1
+  name: speech-to-text
   labels:
-    app: subscriber-app-1
+    app: speech-to-text
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: subscriber-app-1
+      app: speech-to-text
   template:
     metadata:
       labels:
-        app: subscriber-app-1
+        app: speech-to-text
       annotations:
         dapr.io/enabled: "true"
-        dapr.io/app-id: "subscriber-app-1"
+        dapr.io/app-id: speech-to-text
         dapr.io/app-port: "8080"
     spec:
       containers:
-      - name: subscriber-app
-        image: vfarcic/dapr-subscriber-app:0.1.5
+      - name: speech-to-text
+        image: ghcr.io/vfarcic/dapr-speech-to-text:0.1.0
         ports:
         - containerPort: 8080
         env:
@@ -31,33 +31,33 @@ spec:
         - name: ROUTE
           value: /publish
         - name: TOPICS
-          value: A,B
+          value: video,podcast
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: subscriber-app-2
+  name: tweet
   labels:
-    app: subscriber-app-2
+    app: tweet
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: subscriber-app-2
+      app: tweet
   template:
     metadata:
       labels:
-        app: subscriber-app-2
+        app: tweet
       annotations:
         dapr.io/enabled: "true"
-        dapr.io/app-id: "subscriber-app-2"
+        dapr.io/app-id: tweet
         dapr.io/app-port: "8080"
     spec:
       containers:
-      - name: subscriber-app
-        image: vfarcic/dapr-subscriber-app:0.1.5
+      - name: tweet
+        image: ghcr.io/vfarcic/dapr-tweet:0.1.0
         ports:
         - containerPort: 8080
         env:
@@ -66,50 +66,72 @@ spec:
         - name: ROUTE
           value: /publish
         - name: TOPICS
-          value: A,C
+          value: video,podcast,blog
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: publications
+  labels:
+    app: publications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: publications
+  template:
+    metadata:
+      labels:
+        app: publications
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "publications"
+        dapr.io/app-port: "8080"
+    spec:
+      containers:
+      - name: publications
+        image: ghcr.io/vfarcic/dapr-publications:0.1.18
+        ports:
+        - containerPort: 8080
 
 ---
 
 kind: Service
 apiVersion: v1
 metadata:
-  name: react-form
+  name: publications
   labels:
-    app: react-form
+    app: publications
 spec:
   selector:
-    app: react-form
+    app: publications
   ports:
   - protocol: TCP
     port: 80
     targetPort: 8080
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: react-form
+  name: publications
   labels:
-    app: react-form
+    app: publications
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: react-form
-  template:
-    metadata:
-      labels:
-        app: react-form
-      annotations:
-        dapr.io/enabled: "true"
-        dapr.io/app-id: "react-form"
-        dapr.io/app-port: "8080"
-    spec:
-      containers:
-      - name: react-form
-        image: dapriosamples/pubsub-react-form:latest
-        ports:
-        - containerPort: 8080
-        imagePullPolicy: Always
+  rules:
+  - http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: /
+        backend:
+          service:
+            name: publications
+            port:
+              number: 8080
+    host: acme.com

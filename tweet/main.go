@@ -14,7 +14,7 @@ import (
 
 var ctx = context.Background()
 var data = []byte("hello")
-var store = "statestore" // TODO: Rewrite
+var store = "statestore"
 
 func main() {
 	log.Println("Starting the server on 8080...")
@@ -43,5 +43,6 @@ func rootHandler(w http.ResponseWriter, req *http.Request) {
 
 func eventHandler(ctx context.Context, e *common.TopicEvent) (retry bool, err error) {
 	log.Printf("PubsubName: %s, Topic: %s, ID: %s, Data: %s", e.PubsubName, e.Topic, e.ID, e.Data)
+	log.Println("Sending a Tweet")
 	return false, nil
 }
